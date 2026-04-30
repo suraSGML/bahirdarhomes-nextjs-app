@@ -1,17 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-// Validate required environment variables at build/start time
-const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET']
-if (process.env.NODE_ENV === 'production') {
-  const missing = requiredEnvVars.filter(v => !process.env[v])
-  if (missing.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missing.join(', ')}\n` +
-      'Please set them before starting the production server.'
-    )
-  }
-}
-
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline';

@@ -206,7 +206,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
     )
   }
 
-  const amenityToggles = [
+  const amenityToggles: { key: keyof FormState; label: string }[] = [
     { key: 'hasWaterTank',   label: '💧 Water Tank' },
     { key: 'hasBackupPower', label: '⚡ Backup Power' },
     { key: 'isFurnished',    label: '🛋 Furnished' },

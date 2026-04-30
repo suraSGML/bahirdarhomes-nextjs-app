@@ -145,7 +145,7 @@ export default function NewPropertyPage() {
     }
   }
 
-  const amenityToggles = [
+  const amenityToggles: { key: keyof FormState; label: string }[] = [
     { key: 'hasWaterTank', label: '💧 Water Tank' },
     { key: 'hasBackupPower', label: '⚡ Backup Power' },
     { key: 'isFurnished', label: '🛋 Furnished' },

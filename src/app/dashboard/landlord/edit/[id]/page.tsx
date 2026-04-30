@@ -25,6 +25,15 @@ interface NewImage {
   preview: string
 }
 
+interface FormState {
+  title: string; description: string; price: string; priceNegotiable: boolean
+  bedrooms: string; bathrooms: string; areaSqm: string; streetAddress: string; kebele: string
+  latitude: number | undefined; longitude: number | undefined
+  hasWaterTank: boolean; hasBackupPower: boolean; isFurnished: boolean
+  hasParking: boolean; hasInternet: boolean; hasGuard: boolean; isActive: boolean
+  distBduMain: string; distLakeTana: string; distCityCenter: string; distMarket: string
+}
+
 export default function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
   const { token, user, loading: authLoading } = useAuth()
   const router = useRouter()
@@ -41,11 +50,10 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
   // New images to upload
   const [newImages, setNewImages] = useState<NewImage[]>([])
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     title: '', description: '', price: '', priceNegotiable: false,
     bedrooms: '0', bathrooms: '0', areaSqm: '', streetAddress: '', kebele: '',
-    latitude: undefined as number | undefined,
-    longitude: undefined as number | undefined,
+    latitude: undefined, longitude: undefined,
     hasWaterTank: false, hasBackupPower: false, isFurnished: false,
     hasParking: false, hasInternet: false, hasGuard: false, isActive: true,
     distBduMain: '', distLakeTana: '', distCityCenter: '', distMarket: '',
@@ -95,10 +103,11 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
     })
   }, [params])
 
-  const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-    setForm(f => ({ ...f, [key]: e.target.value }))
+  const set = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+    setForm((f: FormState) => ({ ...f, [key]: e.target.value }))
 
-  const toggle = (key: string) => () => setForm(f => ({ ...f, [key]: !f[key as keyof typeof f] }))
+  const toggle = (key: keyof FormState) => () =>
+    setForm((f: FormState) => ({ ...f, [key]: !f[key] }))
 
   function handleNewImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || [])

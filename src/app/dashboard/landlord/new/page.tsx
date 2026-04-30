@@ -16,6 +16,26 @@ const propertyTypeOptions = Object.entries(PROPERTY_TYPE_LABELS).map(([v, l]) =>
 
 interface ImagePreview { base64: string; preview: string; isPrimary: boolean }
 
+interface FormState {
+  title: string; description: string; listingType: string; propertyType: string
+  subCity: string; kebele: string; streetAddress: string
+  latitude: number | undefined; longitude: number | undefined
+  price: string; priceNegotiable: boolean; bedrooms: string; bathrooms: string; areaSqm: string
+  hasWaterTank: boolean; hasBackupPower: boolean; isFurnished: boolean
+  hasParking: boolean; hasInternet: boolean; hasGuard: boolean
+  distBduMain: string; distLakeTana: string; distCityCenter: string; distMarket: string
+}
+
+const DEFAULT_FORM: FormState = {
+  title: '', description: '', listingType: 'RENT', propertyType: 'APARTMENT',
+  subCity: 'FASILO', kebele: '', streetAddress: '',
+  latitude: undefined, longitude: undefined,
+  price: '', priceNegotiable: false, bedrooms: '0', bathrooms: '0', areaSqm: '',
+  hasWaterTank: false, hasBackupPower: false, isFurnished: false,
+  hasParking: false, hasInternet: false, hasGuard: false,
+  distBduMain: '', distLakeTana: '', distCityCenter: '', distMarket: '',
+}
+
 export default function NewPropertyPage() {
   const { user, token, loading: authLoading } = useAuth()
   const router = useRouter()
@@ -35,37 +55,27 @@ export default function NewPropertyPage() {
 
   const DRAFT_KEY = 'property_draft'
 
-  const [form, setForm] = useState(() => {
-    // Restore draft from localStorage if available
+  const [form, setForm] = useState<FormState>(() => {
     if (typeof window !== 'undefined') {
       try {
         const saved = localStorage.getItem(DRAFT_KEY)
-        if (saved) return JSON.parse(saved)
+        if (saved) return JSON.parse(saved) as FormState
       } catch {}
     }
-    return {
-      title: '', description: '', listingType: 'RENT', propertyType: 'APARTMENT',
-      subCity: 'FASILO', kebele: '', streetAddress: '',
-      latitude: undefined as number | undefined,
-      longitude: undefined as number | undefined,
-      price: '', priceNegotiable: false, bedrooms: '0', bathrooms: '0', areaSqm: '',
-      hasWaterTank: false, hasBackupPower: false, isFurnished: false,
-      hasParking: false, hasInternet: false, hasGuard: false,
-      distBduMain: '', distLakeTana: '', distCityCenter: '', distMarket: '',
-    }
+    return DEFAULT_FORM
   })
 
-  // Auto-save draft to localStorage on form change
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(form))
     }
   }, [form])
 
-  const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-    setForm(f => ({ ...f, [key]: e.target.value }))
+  const set = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+    setForm((f: FormState) => ({ ...f, [key]: e.target.value }))
 
-  const toggle = (key: string) => () => setForm(f => ({ ...f, [key]: !f[key as keyof typeof f] }))
+  const toggle = (key: keyof FormState) => () =>
+    setForm((f: FormState) => ({ ...f, [key]: !f[key] }))
 
   async function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || [])

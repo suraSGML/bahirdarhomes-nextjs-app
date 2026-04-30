@@ -407,7 +407,7 @@ export default async function PropertyDetailPage({ params }: Props) {
             More in {SUB_CITY_LABELS[property.subCity]}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {(related as Property[]).map((p) => (
+            {(related as unknown as Property[]).map((p) => (
               <PropertyCard key={p.id} property={p} />
             ))}
           </div>

@@ -15,9 +15,9 @@ const store = new Map<string, RateLimitEntry>()
 // Clean up expired entries every 5 minutes to prevent memory leaks
 setInterval(() => {
   const now = Date.now()
-  for (const [key, entry] of store.entries()) {
+  Array.from(store.entries()).forEach(([key, entry]) => {
     if (entry.resetAt < now) store.delete(key)
-  }
+  })
 }, 5 * 60 * 1000)
 
 interface RateLimitOptions {

@@ -154,7 +154,7 @@ export function Navbar() {
                   {user.fullName?.[0]?.toUpperCase() || '?'}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">{user.fullName || user.phone}</p>
+                  <p className="text-sm font-semibold text-gray-800">{user.fullName || user.email}</p>
                   <p className="text-xs text-gray-400 capitalize">{user.role.toLowerCase()}</p>
                 </div>
               </div>

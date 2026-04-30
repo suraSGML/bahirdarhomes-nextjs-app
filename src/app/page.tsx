@@ -6,7 +6,7 @@ import { SearchFilters } from '@/components/SearchFilters'
 import { ListPropertyButton } from '@/components/ListPropertyButton'
 import { Suspense } from 'react'
 import { Building2, Home, TrendingUp, ShieldCheck, MapPin, Star } from 'lucide-react'
-import { SUB_CITY_LABELS, SubCity } from '@/types'
+import { SUB_CITY_LABELS, SubCity, Property } from '@/types'
 
 async function getFeaturedProperties() {
   try {
@@ -136,8 +136,8 @@ export default async function HomePage() {
 
         {featured.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featured.map((p: never) => (
-              <PropertyCard key={(p as { id: string }).id} property={p} />
+            {(featured as Property[]).map((p) => (
+              <PropertyCard key={p.id} property={p} />
             ))}
           </div>
         ) : (

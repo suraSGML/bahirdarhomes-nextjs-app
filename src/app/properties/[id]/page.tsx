@@ -5,7 +5,7 @@ import { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { formatPrice } from '@/lib/api'
-import { SUB_CITY_LABELS, PROPERTY_TYPE_LABELS } from '@/types'
+import { SUB_CITY_LABELS, PROPERTY_TYPE_LABELS, Property } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 import { InquiryForm } from '@/components/InquiryForm'
 import { ReviewForm } from '@/components/ReviewForm'
@@ -401,14 +401,14 @@ export default async function PropertyDetailPage({ params }: Props) {
       </div>
 
       {/* Related Properties */}
-      {(related as unknown[]).length > 0 && (
+      {(related as Property[]).length > 0 && (
         <div className="mt-12">
           <h2 className="text-xl font-bold text-gray-900 mb-5">
             More in {SUB_CITY_LABELS[property.subCity]}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {(related as never[]).map((p: never) => (
-              <PropertyCard key={(p as { id: string }).id} property={p} />
+            {(related as Property[]).map((p) => (
+              <PropertyCard key={p.id} property={p} />
             ))}
           </div>
         </div>

@@ -46,12 +46,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PropertyDetailPage({ params }: Props) {
   const { id } = await params
 
-  let property: Awaited<ReturnType<typeof prisma.property.findUnique>> & {
+  type PropertyDetail = {
+    id: string; title: string; description: string | null
+    listingType: string; propertyType: string; verificationStatus: string
+    subCity: string; kebele: string | null; streetAddress: string | null
+    latitude: number | null; longitude: number | null
+    price: number; priceNegotiable: boolean
+    bedrooms: number; bathrooms: number; areaSqm: number | null
+    hasWaterTank: boolean; hasBackupPower: boolean; isFurnished: boolean
+    hasParking: boolean; hasInternet: boolean; hasGuard: boolean
+    distBduMain: number | null; distLakeTana: number | null
+    distCityCenter: number | null; distMarket: number | null
+    isActive: boolean; viewCount: number; createdAt: Date; updatedAt: Date
+    titleDeedRef: string | null; ownerId: string
     images: { id: string; url: string; thumbnailUrl: string | null; isPrimary: boolean; sortOrder: number }[]
     owner: { id: string; fullName: string | null; email: string; avatarUrl: string | null }
     reviews: { id: string; rating: number; comment: string | null; createdAt: Date; user: { id: string; fullName: string | null } }[]
     _count: { reviews: number; inquiries: number }
-  } | null = null
+  }
+
+  let property: PropertyDetail | null = null
 
   let related: ReturnType<typeof serialize> = []
   let dbError = false
@@ -65,7 +79,7 @@ export default async function PropertyDetailPage({ params }: Props) {
         reviews: { include: { user: { select: { id: true, fullName: true } } }, orderBy: { createdAt: 'desc' }, take: 10 },
         _count:  { select: { reviews: true, inquiries: true } },
       },
-    }) as typeof property
+    }) as unknown as PropertyDetail
 
     if (!property || !property.isActive) notFound()
 

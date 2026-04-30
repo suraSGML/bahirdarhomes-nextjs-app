@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  TENANT
+  LANDLORD
+  ADMIN
+}
+
+enum ListingType {
+  RENT
+  SALE
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  VILLA
+  STUDIO
+  COMMERCIAL
+  LAND
+}
+
+enum SubCity {
+  FASILO
+  BELAY_ZELEKE
+  TANA
+  GINBOT_20
+  SEFENE_SELAM
+  SHUM_ABO
+  HIDAR_11
+  AZEZO
+  MESHENTI
+}
+
+enum VerificationStatus {
+  STANDARD
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum InquiryStatus {
+  PENDING
+  RESPONDED
+  CLOSED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String?
+  role         UserRole @default(TENANT)
+  avatarUrl    String?
+  isActive      Boolean  @default(true)
+  isEmailVerified Boolean @default(false)
+  preferredLang String  @default("en")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  properties      Property[]
+  inquiries       Inquiry[]
+  savedProperties SavedProperty[]
+  verifications   AdminVerification[]
+  reviews         Review[]
+  passwordResets  PasswordResetToken[]
+  emailVerifications EmailVerification[]
+
+  @@index([email])
+}
+
+model Property {
+  id                 String             @id @default(cuid())
+  ownerId            String
+  title              String
+  description        String?
+  listingType        ListingType
+  propertyType       PropertyType
+  verificationStatus VerificationStatus @default(STANDARD)
+
+  subCity       SubCity
+  kebele        String?
+  streetAddress String?
+  latitude      Float?
+  longitude     Float?
+
+  distBduMain    Int?
+  distLakeTana   Int?
+  distCityCenter Int?
+  distMarket     Int?
+
+  price           Decimal @db.Decimal(12, 2)
+  priceNegotiable Boolean @default(false)
+
+  bedrooms  Int      @default(0)
+  bathrooms Int      @default(0)
+  areaSqm   Decimal? @db.Decimal(8, 2)
+
+  hasWaterTank   Boolean @default(false)
+  hasBackupPower Boolean @default(false)
+  isFurnished    Boolean @default(false)
+  hasParking     Boolean @default(false)
+  hasInternet    Boolean @default(false)
+  hasGuard       Boolean @default(false)
+
+  titleDeedRef String?
+  isActive     Boolean  @default(true)
+  viewCount    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  owner         User                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  images        PropertyImage[]
+  inquiries     Inquiry[]
+  savedBy       SavedProperty[]
+  verifications AdminVerification[]
+  reviews       Review[]
+
+  @@index([price])
+  @@index([subCity])
+  @@index([bedrooms])
+  @@index([listingType])
+  @@index([verificationStatus])
+  @@index([ownerId])
+  @@index([isActive])
+}
+
+model PropertyImage {
+  id           String   @id @default(cuid())
+  propertyId   String
+  url          String
+  thumbnailUrl String?
+  isPrimary    Boolean  @default(false)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+}
+
+model AdminVerification {
+  id           String             @id @default(cuid())
+  propertyId   String
+  adminId      String
+  status       VerificationStatus
+  titleDeedRef String?
+  notes        String?
+  verifiedAt   DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  admin    User     @relation(fields: [adminId], references: [id])
+
+  @@index([propertyId])
+  @@index([adminId])
+}
+
+model Inquiry {
+  id         String        @id @default(cuid())
+  propertyId String
+  senderId   String
+  message    String
+  status     InquiryStatus @default(PENDING)
+  reply      String?
+  repliedAt  DateTime?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  sender   User     @relation(fields: [senderId], references: [id])
+
+  @@index([propertyId])
+  @@index([senderId])
+}
+
+model SavedProperty {
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@index([userId])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  propertyId String
+  userId     String
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, propertyId])
+  @@index([propertyId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+model EmailVerification {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}

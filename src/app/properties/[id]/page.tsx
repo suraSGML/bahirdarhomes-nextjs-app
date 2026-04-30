@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { formatPrice } from '@/lib/api'
 import { SUB_CITY_LABELS, PROPERTY_TYPE_LABELS, Property } from '@/types'
+import { SubCity, PropertyType, ListingType, VerificationStatus } from '@prisma/client'
 import { Badge } from '@/components/ui/Badge'
 import { InquiryForm } from '@/components/InquiryForm'
 import { ReviewForm } from '@/components/ReviewForm'
@@ -48,8 +49,8 @@ export default async function PropertyDetailPage({ params }: Props) {
 
   type PropertyDetail = {
     id: string; title: string; description: string | null
-    listingType: string; propertyType: string; verificationStatus: string
-    subCity: string; kebele: string | null; streetAddress: string | null
+    listingType: ListingType; propertyType: PropertyType; verificationStatus: VerificationStatus
+    subCity: SubCity; kebele: string | null; streetAddress: string | null
     latitude: number | null; longitude: number | null
     price: number; priceNegotiable: boolean
     bedrooms: number; bathrooms: number; areaSqm: number | null

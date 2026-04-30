@@ -47,6 +47,9 @@ const subCityImages: Record<SubCity, string> = {
   GINBOT_20:    'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=250&fit=crop',
   SEFENE_SELAM: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop',
   SHUM_ABO:     'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=250&fit=crop',
+  HIDAR_11:     'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&h=250&fit=crop',
+  AZEZO:        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=250&fit=crop',
+  MESHENTI:     'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=400&h=250&fit=crop',
 }
 
 export default async function HomePage() {
